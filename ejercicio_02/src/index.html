@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src https://www.omdbapi.com http://www.omdbapi.com; img-src 'self' https://m.media-amazon.com https://*.media-amazon.com https://ia.media-imdb.com data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>CineScope - Catálogo de Películas y Series</title>
+  <link rel="icon" href="../assets/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-logo-wrapper">
+          <img src="../assets/icon.png" alt="Logo de CineScope" class="brand-logo" width="46" height="46">
+          <span class="brand-glow"></span>
+        </div>
+        <div class="brand-text">
+          <div class="badge-row">
+            <span class="desktop-badge" id="appPlatformBadge">⚡ ESCRITORIO · ELECTRON</span>
+            <span class="version-badge" id="appVersionBadge">v1.0.0</span>
+          </div>
+          <h1>CineScope</h1>
+          <p class="subtitle">Explorador de películas y producciones cinematográficas</p>
+        </div>
+      </div>
+      <div class="header-stats">
+        <div class="stat-box">
+          <span class="stat-number" id="totalMoviesCount">—</span>
+          <span class="stat-label">Títulos Encontrados</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-number" id="totalPagesCount">—</span>
+          <span class="stat-label">Páginas</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section class="controls-card" aria-label="Buscador y filtros de películas">
+      <form id="searchForm" class="filter-form" role="search">
+        <div class="form-group search-group">
+          <label for="queryInput">
+            <svg class="field-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+            Título de la película o saga
+          </label>
+          <div class="input-wrapper">
+            <input 
+              id="queryInput" 
+              type="text" 
+              placeholder="Ej. Inception, Avatar, Batman, Interstellar, Matrix…" 
+              maxlength="100"
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <button type="button" id="clearSearchBtn" class="clear-input-btn" title="Borrar texto" aria-label="Borrar texto">✕</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="typeSelect">
+            <svg class="field-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18M17 3v18M3 7.5h4M3 12h18M3 16.5h4M17 7.5h4M17 16.5h4"/></svg>
+            Formato / Tipo
+          </label>
+          <select id="typeSelect">
+            <option value="">Todos los formatos</option>
+            <option value="movie" selected>Películas (Movies)</option>
+            <option value="series">Series de TV</option>
+            <option value="episode">Episodios</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="yearInput">
+            <svg class="field-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Año de estreno
+          </label>
+          <input id="yearInput" type="number" min="1900" max="2030" placeholder="Ej. 2023">
+        </div>
+
+        <div class="form-group">
+          <label for="genreSelect">
+            <svg class="field-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Género
+          </label>
+          <select id="genreSelect">
+            <option value="">Todos los géneros</option>
+            <option value="Action">Acción</option>
+            <option value="Adventure">Aventura</option>
+            <option value="Sci-Fi">Ciencia Ficción</option>
+            <option value="Drama">Drama</option>
+            <option value="Comedy">Comedia</option>
+            <option value="Horror">Terror</option>
+            <option value="Thriller">Suspenso / Thriller</option>
+            <option value="Animation">Animación</option>
+            <option value="Crime">Crimen</option>
+            <option value="Fantasy">Fantasía</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" id="submitSearchBtn" class="btn btn-primary">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+            <span>Buscar</span>
+          </button>
+          <button type="button" id="resetBtn" class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+            <span>Restablecer</span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <div class="status-bar" id="statusBar" role="status" aria-live="polite">
+      <div class="status-indicator-dot"></div>
+      <span id="statusMessage">Consultando la cartelera cinematográfica…</span>
+    </div>
+
+    <section id="moviesGrid" class="movies-grid" aria-label="Catálogo de películas">
+    </section>
+
+    <nav class="pagination-bar" aria-label="Navegación de páginas">
+      <button id="prevBtn" class="btn btn-pagination" disabled>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"></path></svg>
+        <span>Anterior</span>
+      </button>
+
+      <div class="page-indicator">
+        <span id="currentPageText">Página 1</span>
+        <span class="page-separator">/</span>
+        <span id="totalPagesText">1</span>
+      </div>
+
+      <button id="nextBtn" class="btn btn-pagination" disabled>
+        <span>Siguiente</span>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"></path></svg>
+      </button>
+    </nav>
+  </main>
+
+  <div id="movieModal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button id="closeModalBtn" class="modal-close-btn" aria-label="Cerrar modal">&times;</button>
+      <div id="modalBody" class="modal-body">
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>Proyecto Académico · Integración con <strong>OMDb API (The Open Movie Database)</strong></p>
+      <p class="footer-meta">Entorno de Escritorio Electron · Carga local sin dependencias de servidor</p>
+    </div>
+  </footer>
+
+</body>
+</html>
